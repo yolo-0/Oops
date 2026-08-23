@@ -126,4 +126,34 @@ curl http://localhost:8000/skills
 
 # 9. 评测
 curl -X POST http://localhost:8000/eval/run
+```## 14. 停止、重启和清理
+
+停止服务：
+
+```bash
+docker compose stop
+```
+
+重启服务：
+
+```bash
+docker compose restart oops
+```
+
+停止并删除容器，但保留数据卷：
+
+```bash
+docker compose down
+```
+
+停止并删除容器和数据卷：
+
+```bash
+docker compose down -v
+```
+
+重新构建并启动：
+
+```bash
+docker compose up -d --build
 ```
