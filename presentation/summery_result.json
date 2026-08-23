@@ -1,0 +1,102 @@
+{
+  "root_dir": "/workspace/skills",
+  "count": 3,
+  "skills": [
+    {
+      "name": "账单退款处理规范",
+      "description": "适用于 EchoMind BillingAgent 的账单查询、扣款说明、退款申请、发票开具和订阅管理规范",
+      "path": "/workspace/skills/billing_support/SKILL.md",
+      "keywords": [
+        "退款",
+        "退费",
+        "扣款",
+        "重复扣款",
+        "支付",
+        "账单",
+        "发票",
+        "订阅",
+        "续费",
+        "取消订阅",
+        "优惠券",
+        "余额",
+        "充值",
+        "付款",
+        "收据",
+        "invoice",
+        "refund",
+        "billing",
+        "payment"
+      ],
+      "agents": [
+        "billing"
+      ],
+      "enabled": true,
+      "content_chars": 2179
+    },
+    {
+      "name": "通用客服接待规范",
+      "description": "适用于 EchoMind GeneralAgent 的通用客服接待、信息澄清、问题分流和转人工规范",
+      "path": "/workspace/skills/general_customer_service/SKILL.md",
+      "keywords": [
+        "你好",
+        "您好",
+        "咨询",
+        "帮助",
+        "客服",
+        "订单",
+        "售后",
+        "活动",
+        "会员",
+        "账户",
+        "资料",
+        "投诉",
+        "建议",
+        "人工",
+        "转人工",
+        "处理进度",
+        "服务"
+      ],
+      "agents": [
+        "general"
+      ],
+      "enabled": true,
+      "content_chars": 1505
+    },
+    {
+      "name": "技术支持处理规范",
+      "description": "适用于 EchoMind TechnicalAgent 的故障排查、错误诊断、配置指导、接口接入和升级处理规范",
+      "path": "/workspace/skills/technical_support/SKILL.md",
+      "keywords": [
+        "报错",
+        "错误",
+        "异常",
+        "崩溃",
+        "卡顿",
+        "无法登录",
+        "登录失败",
+        "接口",
+        "API",
+        "SDK",
+        "配置",
+        "部署",
+        "连接失败",
+        "超时",
+        "500",
+        "401",
+        "403",
+        "404",
+        "回调",
+        "webhook",
+        "日志",
+        "数据库",
+        "缓存"
+      ],
+      "agents": [
+        "technical"
+      ],
+      "enabled": true,
+      "content_chars": 2076
+    }
+  ],
+  "errors": []
+}

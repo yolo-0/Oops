@@ -1,0 +1,904 @@
+{
+  "pass_rate": 1,
+  "total": 30,
+  "passed": 30,
+  "avg_scores": {
+    "relevance": 0.9155,
+    "accuracy": 0.9741,
+    "completeness": 0.8914,
+    "helpfulness": 0.8862,
+    "compliance": 1,
+    "intent_accuracy": 0.9583,
+    "intent_macro_f1": 0.9583
+  },
+  "regressions": [],
+  "recommendations": [
+    "所有指标均达标，继续保持"
+  ],
+  "memory_benchmark": {
+    "compression_fidelity": {
+      "passed": true,
+      "slot_recall": 1,
+      "missing_slots": [],
+      "service_records": "{\"issue_types\": [\"配送问题\"], \"handel_flow\": \"用户投诉快递问题，客服询问订单号，用户提供订单号A12345，客服确认订单并要求留下联系电话，用户提供电话13800138000。\", \"submitted_materials\": [], \"extracted_slots\": {\"订单号\": \"A12345\", \"联系电话\": \"13800138000\"}, \"escalation_events\": \"是\", \"resolution_status\": \"正在解决\"}\n{\"issue_types\": [\"配送问题\"], \"handel_flow\": \"用户催单，客服安抚并加急催单，用户提供地址，客服记录地址。\", \"submitted_materials\": [], \"extracted_slots\": {\"送货地址\": \"北京朝阳区\"}, \"escalation_events\": \"否\", \"resolution_status\": \"正在解决\"}",
+      "recent_messages_count": 6
+    },
+    "retrieval_accuracy": {
+      "passed": true,
+      "top_1": "用户反映路由器频繁掉线，重启后依然不稳定。",
+      "all_retrieved": [
+        "用户反映路由器频繁掉线，重启后依然不稳定。",
+        "用户反映宽带欠费，已指导通过APP缴费恢复。",
+        "用户反映电视机顶盒故障，屏幕显示错误码E04。"
+      ]
+    },
+    "memory_evolution": {
+      "profile_evolution": {
+        "phase1": "小白",
+        "phase2": "熟练",
+        "passed": true
+      },
+      "commitment_machine": {
+        "status_after_timeout": "已过期",
+        "escalation_alert_fired": true,
+        "escalation_alert_cleared_after_done": true,
+        "passed": true
+      }
+    }
+  },
+  "results": [
+    {
+      "test_id": "intent_recognition",
+      "passed": true,
+      "scores": {
+        "accuracy": 0.9583,
+        "macro_f1": 0.9583
+      },
+      "detail": "准确率 95.8%，Macro-F1 0.958",
+      "metadata": {
+        "total": 24,
+        "correct": 23,
+        "cases": [
+          {
+            "message": "我的订单发货了吗？怎么一直显示在处理中",
+            "expected": "order_status",
+            "predicted": "order_status",
+            "confidence": 0.715,
+            "reasoning": "用户询问订单是否发货及当前处理状态，直接匹配订单状态查询意图。"
+          },
+          {
+            "message": "顺丰单号 SF123456 一直停在分拨中心",
+            "expected": "logistics",
+            "predicted": "logistics",
+            "confidence": 0.6949342170044625,
+            "reasoning": "用户提到顺丰单号并询问物流状态，属于物流查询意图。"
+          },
+          {
+            "message": "帮我取消昨天晚上下单的那双鞋",
+            "expected": "request",
+            "predicted": "request",
+            "confidence": 0.7998952719956017,
+            "reasoning": "用户明确要求取消订单，属于请求类操作，且没有更细粒度的取消订单意图，因此归类为request。"
+          },
+          {
+            "message": "退款什么时候能打到我的支付宝里？",
+            "expected": "refund",
+            "predicted": "refund",
+            "confidence": 0.715,
+            "reasoning": "用户询问退款到账时间，核心是退款相关，因此优先选择细粒度意图refund。"
+          },
+          {
+            "message": "收到的衣服有个洞，我要退货！",
+            "expected": "refund",
+            "predicted": "refund",
+            "confidence": 0.68,
+            "reasoning": "用户明确表示要退货，且退货通常涉及退款流程，因此优先匹配细粒度意图refund。"
+          },
+          {
+            "message": "昨天付的钱，今天突然说缺货，到底怎么回事？",
+            "expected": "order_status",
+            "predicted": "order_status",
+            "confidence": 0.595,
+            "reasoning": "用户询问付款后缺货的原因，主要关注订单状态变化，属于订单状态查询。"
+          },
+          {
+            "message": "公司报销需要抬头是星辰科技的增值税专票",
+            "expected": "invoice",
+            "predicted": "invoice",
+            "confidence": 0.715,
+            "reasoning": "用户明确要求开具抬头为星辰科技的增值税专票，属于发票开具请求。"
+          },
+          {
+            "message": "为什么我这个月被扣了两次会员费？",
+            "expected": "payment_issue",
+            "predicted": "payment_issue",
+            "confidence": 0.6649999999999999,
+            "reasoning": "用户询问重复扣款问题，属于支付异常，细粒度意图为payment_issue。"
+          },
+          {
+            "message": "刚绑定的信用卡无法支付，提示错误代码E102",
+            "expected": "payment_issue",
+            "predicted": "payment_issue",
+            "confidence": 0.63,
+            "reasoning": "用户报告信用卡支付失败并提示错误代码，属于支付问题，细粒度意图为payment_issue。"
+          },
+          {
+            "message": "密码忘记了怎么办，邮箱也进不去了",
+            "expected": "technical_login",
+            "predicted": "technical_login",
+            "confidence": 0.63,
+            "reasoning": "用户提到密码忘记和邮箱无法访问，属于登录相关的技术问题，优先匹配细粒度意图technical_login。"
+          },
+          {
+            "message": "发现我的账号在异地登录，是不是被盗了？",
+            "expected": "account_security",
+            "predicted": "account_security",
+            "confidence": 0.715,
+            "reasoning": "用户提到账号异地登录，怀疑被盗，直接涉及账户安全问题，应优先归类为account_security。"
+          },
+          {
+            "message": "帮我把绑定的手机号改成 13800138000",
+            "expected": "account",
+            "predicted": "account",
+            "confidence": 0.6649999999999999,
+            "reasoning": "用户请求修改绑定的手机号，属于账户信息变更操作，匹配细粒度意图account。"
+          },
+          {
+            "message": "网页打开一片空白，刷新也没用",
+            "expected": "technical_crash",
+            "predicted": "technical_crash",
+            "confidence": 0.6649999999999999,
+            "reasoning": "用户描述网页打开空白且刷新无效，属于技术故障，且具体表现为页面崩溃或加载失败，匹配细粒度意图technical_crash。"
+          },
+          {
+            "message": "安卓端APP一点击支付按钮就直接闪退",
+            "expected": "technical_crash",
+            "predicted": "technical_crash",
+            "confidence": 0.715,
+            "reasoning": "用户描述安卓端APP点击支付按钮时直接闪退，属于应用崩溃问题，匹配细粒度意图technical_crash。"
+          },
+          {
+            "message": "登录一直报 401 Unauthorized",
+            "expected": "technical_login",
+            "predicted": "technical_login",
+            "confidence": 0.8200813874985468,
+            "reasoning": "用户明确提到登录时遇到401错误，属于登录故障，应优先匹配细粒度意图technical_login。"
+          },
+          {
+            "message": "你们有没有适合跑步的碳板跑鞋？",
+            "expected": "product_search",
+            "predicted": "product_search",
+            "confidence": 0.7152955690769545,
+            "reasoning": "用户询问是否有适合跑步的碳板跑鞋，属于产品搜索意图。"
+          },
+          {
+            "message": "有没有新款的iPhone 15 Pro Max 256G 黑色？",
+            "expected": "product_search",
+            "predicted": "product_search",
+            "confidence": 0.7259952315503164,
+            "reasoning": "用户询问是否有新款iPhone 15 Pro Max 256G黑色，属于产品搜索意图。"
+          },
+          {
+            "message": "我不要跟机器人说话，叫你们经理来",
+            "expected": "human_handoff",
+            "predicted": "human_handoff",
+            "confidence": 0.6649999999999999,
+            "reasoning": "用户明确要求转接人工客服并找经理，属于人工接管请求。"
+          },
+          {
+            "message": "你们的送货速度还挺快的，给个赞！",
+            "expected": "feedback",
+            "predicted": "feedback",
+            "confidence": 0.6649999999999999,
+            "reasoning": "用户表达了对送货速度的赞赏，属于正面反馈。"
+          },
+          {
+            "message": "哈喽，早上好啊，有人在吗？",
+            "expected": "greeting",
+            "predicted": "greeting",
+            "confidence": 0.7688078671210825,
+            "reasoning": "用户使用'哈喽'、'早上好'等问候语，并询问是否有人在，属于典型的问候意图。"
+          },
+          {
+            "message": "你们这破软件又卡死了，真垃圾！",
+            "expected": "technical_crash",
+            "predicted": "technical_crash",
+            "confidence": 0.6649999999999999,
+            "reasoning": "用户明确提到软件卡死，属于技术故障中的崩溃问题，优先匹配细粒度意图technical_crash。"
+          },
+          {
+            "message": "我朋友说你们最近双十一有满减优惠活动？",
+            "expected": "query",
+            "predicted": "query",
+            "confidence": 0.68,
+            "reasoning": "用户询问双十一满减优惠活动，属于对活动信息的查询，而非具体业务操作或投诉。"
+          },
+          {
+            "message": "怎么修改系统的语言设置？",
+            "expected": "query",
+            "predicted": "request",
+            "confidence": 0.595,
+            "reasoning": "用户询问如何修改系统语言设置，属于请求操作指导，而非查询状态或投诉。"
+          },
+          {
+            "message": "111111111",
+            "expected": "other",
+            "predicted": "other",
+            "confidence": 0.6649999999999999,
+            "reasoning": "用户消息为纯数字'111111111'，无实际语义，无法匹配任何业务意图，故归为'other'。"
+          }
+        ]
+      }
+    },
+    {
+      "test_id": "dialog_0",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.9400000000000001
+      },
+      "detail": "Q: 我的订单 #12345 还没到，已经超时了... → 综合评分 0.940",
+      "metadata": {
+        "question": "我的订单 #12345 还没到，已经超时了",
+        "response": "我查了一下，你提供的订单号 **12345** 在系统中没有查询到对应的记录。\n\n请先核实一下订单号是否输入正确。另外，为了帮你进一步确认，可以麻烦你提供一下**下单时使用的手机号后四位**或**具体的下单时间**吗？这样我能更好地帮你查找物流信息。",
+        "agent_type": "general",
+        "intent": "logistics",
+        "turn": 0,
+        "conv_id": "eval_0",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_1",
+      "passed": true,
+      "scores": {
+        "relevance": 1,
+        "accuracy": 1,
+        "completeness": 1,
+        "helpfulness": 1,
+        "compliance": 1,
+        "overall": 1
+      },
+      "detail": "Q: 应用登录一直报错 401... → 综合评分 1.000",
+      "metadata": {
+        "question": "应用登录一直报错 401",
+        "response": "好的，我们先来定位这个 401 问题。401 通常表示 **认证失败**，即系统无法确认“你是谁”，而不是权限不足（403 才是权限不足）。\n\n为了高效排查，请先确认以下 **三个关键点**：\n\n1.  **错误是否持续出现？**\n    -   是每次登录都报错，还是偶尔出现？\n    -   如果是偶尔出现，是否在特定时间段（如早高峰）或特定网络下（如公司 VPN）发生？\n\n2.  **是何种登录方式？**\n    -   账号密码直接登录？\n    -   短信/邮箱验证码登录？\n    -   第三方（微信/钉钉/OAuth）授权登录？\n\n3.  **排查最基本的网络与时间问题**（最容易被忽略，但很常见）：\n    -   请检查您电脑/手机的系统时间是否准确（误差超过 1 分钟可能导致 Token 校验失败）。\n    -   可以尝试切换网络（比如从 Wi-Fi 切到手机热点），看是否与当前网络环境有关。\n\n---\n\n**根据您的回答，我给出对应的排查路径：**\n\n### 如果错误持续出现（每一次都失败）\n这种情况大概率是**账号状态**或**客户端存储**问题。\n\n-   **可能原因**：客户端本地存储的登录状态（Token）失效或已损坏。\n-   **排查步骤**：\n    1.  **清除缓存**：请先**清除该应用（或浏览器）的缓存和 Cookie**，然后完全关闭应用，重新打开尝试登录。\n    2.  **检查账号状态**：如果清除缓存无效，请确认该账号是否被锁定、禁用，或是否在管理后台被重置了密码。如果是企业账号，请联系管理员确认账号状态。\n    3.  **后台确认**：如果以上都无效，大概率是服务端账号校验逻辑异常，建议升级处理。\n\n---\n\n### 如果是“验证码登录”报 401\n-   **可能原因**：验证码错误、验证码过期，或短信接口在服务端返回了异常但被包装成了 401。\n-   **排查步骤**：请重新获取一次验证码，并在 **60 秒内** 输入，确认验证码前后无空格。如果重试后仍报 401，需要请求 `request_id` 定位服务端日志。\n\n---\n\n**请告诉我最接近哪种情况，并补充以下信息，以便我精准判断：**\n\n1.  **账号类型**：个人账号还是企业/团队账号？\n2.  **客户端版本**：应用版本号是多少？或者用的是网页版（哪个浏览器）？\n3.  **如果有`request_id`或`请求ID`，请提供。**（通常在登录失败页面的“详细信息”或开发调试工具里能找到，这是一串字母数字组合，类似 `req_xxxxx`）。\n\n**当前最重要的建议**：\n如果这是**企业生产环境**且**多名用户同时无法登录**，请立即暂停操作并告知，这很可能需要**升级到二线技术或管理员**，因为可能涉及服务端会话服务或密钥配置异常。\n\n请先尝试**清除缓存并重启应用**，然后告诉我结果。",
+        "agent_type": "technical",
+        "intent": "technical_login",
+        "turn": 0,
+        "conv_id": "eval_1",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_2",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.9400000000000001
+      },
+      "detail": "Q: 我想退款... → 综合评分 0.940",
+      "metadata": {
+        "question": "我想退款",
+        "response": "好的，我来帮您处理退款申请。在开始之前，需要先确认您的订单情况，以便我能给出准确的建议。\n\n为了核实您的订单，我需要向您确认几条关键信息：\n\n**需要核验的信息：**\n1. **订单号**：请提供您的订单号或交易号。\n2. **支付信息**：支付时使用的是哪个渠道？（例如：微信、支付宝、银行卡）\n3. **扣款情况**：扣款的具体金额和支付时间是什么时候？\n\n**当前说明：**\n退款是否可以通过，以及退款金额的多少，需要先核验您的**订单状态**和**实际支付金额**。退款金额以您实际支付的钱为准，如果使用了优惠券或余额，退款规则会有所不同。\n\n**下一步处理：**\n请您先补充以上提到的订单号、支付时间和渠道。收到信息后，我会根据这些内容帮您具体判断下一步处理路径，是走自助退款还是需要提交人工审核。\n\n请放心，我会在核实后为您提供准确的说明。",
+        "agent_type": "billing",
+        "intent": "refund",
+        "turn": 0,
+        "conv_id": "eval_2",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_3",
+      "passed": true,
+      "scores": {
+        "relevance": 1,
+        "accuracy": 1,
+        "completeness": 1,
+        "helpfulness": 1,
+        "compliance": 1,
+        "overall": 1
+      },
+      "detail": "Q: 你们这破软件又闪退了，垃圾！... → 综合评分 1.000",
+      "metadata": {
+        "question": "你们这破软件又闪退了，垃圾！",
+        "response": "我理解您现在的情绪，软件闪退确实非常影响使用，给您添麻烦了。作为技术支持，我会尽全力帮您解决这个问题。\n\n针对“闪退”问题，为了能准确定位原因，我需要向您了解几个关键信息，请您配合：\n\n1.  **具体场景**：闪退是发生在**打开软件时**、**使用某个特定功能时**，还是**随机发生**的？\n2.  **操作步骤**：如果可能，请描述一下闪退前您**最后操作的几个步骤**是什么。\n3.  **软件版本**：您当前使用的软件**版本号**是多少？（通常可以在“关于”或“设置”里找到）\n4.  **设备信息**：您的**操作系统**是什么？（例如：Windows 10/11、macOS 14、或具体的手机型号和系统版本）\n5.  **错误提示**：闪退时，屏幕上是**直接消失**，还是有出现任何**错误弹窗**？（如果有，请告知弹窗上的文字或代码）\n\n**在等待您回复的同时，您可以先尝试以下通用的排查步骤：**\n\n*   **彻底重启**：请完全退出软件（包括后台），然后重新打开。如果是电脑端，建议重启一下电脑。\n*   **检查更新**：请确保您的软件和操作系统均为最新版本，旧版本可能存在已知的兼容性问题。\n*   **清理缓存**：在软件的设置中找到“清除缓存”或类似选项（注意不要选择“清除数据”）。\n*   **检查运行环境**：如果软件依赖特定运行库（如DirectX、.NET Framework等），请检查它们是否完整。\n\n**如果以上方法都无法解决，请提供上述信息**，我会根据细节为您提供更精准的排查方案。如果问题涉及系统底层配置或需要远程操作，我会告知您提交工单升级给资深专家处理。\n\n请放心，我们一定会帮您处理好。感谢您的耐心配合！",
+        "agent_type": "technical",
+        "intent": "technical_crash",
+        "turn": 0,
+        "conv_id": "eval_3",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_4",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 0.95,
+        "completeness": 0.85,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.92
+      },
+      "detail": "Q: 我上周买的耳机，左耳没声音了，是坏了吗？我想要换一个，或者退... → 综合评分 0.920",
+      "metadata": {
+        "question": "我上周买的耳机，左耳没声音了，是坏了吗？我想要换一个，或者退款。",
+        "response": "您好，很抱歉听到您的耳机出现了问题。关于您提到的换货或退款，我这边**无法直接操作**，因为这涉及到订单状态、商品检测和售后审核。\n\n不过，我可以先帮您梳理一下所需的核验信息和通常的处理路径。\n\n**需要核验的信息：**\n\n请提供您的 **订单号**。如果没有，也可以提供**下单时使用的手机号**或**支付渠道（如支付宝/微信）的交易单号**，以便我们核实订单详情。\n\n**当前说明：**\n\n- 如果耳机在**保修期内**且属于**非人为损坏**，一般符合换货或维修政策。\n- 如果符合退货政策（如7天无理由或指定售后保障），通常可以申请退款；但退款金额以您的**实付金额**为准，且不影响优惠券或活动规则的限制。\n- **已使用**的商品，特别是涉及**性能故障**的，通常需要**寄回检测**后才能确认换货或退款资格。\n\n**下一步处理：**\n\n1.  您先提供订单号，我帮您确认该订单适用的售后政策边界。\n2.  确认基本政策后，您可以**提交售后申请**，将耳机寄回检测。\n3.  检测结果出具后，具体是换新、维修还是退款，由售后审核人员根据结果确认。\n\n请您先提供订单号，我来帮您进一步核实。",
+        "agent_type": "billing",
+        "intent": "refund",
+        "turn": 0,
+        "conv_id": "eval_4",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_5",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.8,
+        "compliance": 1,
+        "overall": 0.92
+      },
+      "detail": "Q: 能给我一份所有订单的明细吗，要包含发票号码和对应的物流公司名... → 综合评分 0.920",
+      "metadata": {
+        "question": "能给我一份所有订单的明细吗，要包含发票号码和对应的物流公司名称",
+        "response": "好的，我理解您需要一份包含**发票号码**和**物流公司名称**的完整订单明细。\n\n不过，根据合规要求，涉及发票信息（尤其是发票号码）和物流信息的查询，需要先进行身份和订单信息核验，以确保信息安全。\n\n为了准确为您调取和整理这份明细，请您提供以下必要信息：\n\n**需要核验的信息**\n\n1.  **关联订单号**：如果在提供实体中包含了具体的订单号，请明确告知；若没有具体订单号，请提供您账号下的**查询时间段**（例如：近3个月）。\n2.  **身份信息**：请确认您是订单的购买账号本人，我可能需要与您预留的手机号或邮箱进行核对（仅用于验证，不会索要验证码或密码）。\n\n**当前说明**\n\n在获得上述核验信息后，我可以为您查询订单状态、实付金额和物流承运方（即物流公司名称）。但请注意：\n\n- **发票号码**属于敏感财务信息，查询和提供通常需要额外安全校验或人工审核授权。\n- **物流公司名称**（如顺丰、中通等）可以在订单详情中直接查询，这部分信息核验后通常可以即时提供。\n\n**下一步处理**\n\n请您补充以下缺失信息：\n\n1.  您需要查询的**具体订单号**或**时间段**。\n2.  确认您是该订单的本人账户。\n\n收到并核实后，我会尽快为您整理订单明细。对于**发票号码**部分，如果查询受限，我会在整理完基础订单和物流信息后，引导您进入**人工审核**流程获取该敏感字段。",
+        "agent_type": "billing",
+        "intent": "invoice",
+        "turn": 0,
+        "conv_id": "eval_5",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_6",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.8,
+        "helpfulness": 0.8,
+        "compliance": 1,
+        "overall": 0.9
+      },
+      "detail": "Q: 因为你们的系统bug，害我错过了一个大单，我要求赔偿我一万块... → 综合评分 0.900",
+      "metadata": {
+        "question": "因为你们的系统bug，害我错过了一个大单，我要求赔偿我一万块钱，否则我就去消协告你们！",
+        "response": "非常理解您的心情，因系统问题给您造成这么大的困扰，我非常抱歉。\n\n关于您提出的赔偿要求，我非常重视，但具体的赔偿方案需要由我们的专员依据您的订单信息和服务条款进行详细评估和处理。我这边无法直接给出一万元的赔偿承诺。\n\n为了能尽快为您解决，我需要先核实一下您的订单信息。请问您方便提供一下您的**订单号**吗？我可以为您查询到具体的订单情况，并为您优先转接给专门处理此类问题的客服专员。",
+        "agent_type": "general",
+        "intent": "escalation",
+        "turn": 0,
+        "conv_id": "eval_6",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_7",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.9400000000000001
+      },
+      "detail": "Q: 你能保证明天早上8点之前一定能送到吗？保证不了我就退货！... → 综合评分 0.940",
+      "metadata": {
+        "question": "你能保证明天早上8点之前一定能送到吗？保证不了我就退货！",
+        "response": "非常理解您对配送时间的关切。不过，由于缺少订单号，我目前无法查询到具体的物流信息，因此无法向您保证准确的送达时间。\n\n建议您提供订单号，我马上为您查询最新的物流轨迹。或者，您也可以直接联系配送方客服进行核实。如果因为时效问题需要退货，请告诉我，我也可以协助您处理退货流程。",
+        "agent_type": "general",
+        "intent": "logistics",
+        "turn": 0,
+        "conv_id": "eval_7",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_8_turn_0",
+      "passed": true,
+      "scores": {
+        "relevance": 1,
+        "accuracy": 1,
+        "completeness": 1,
+        "helpfulness": 1,
+        "compliance": 1,
+        "overall": 1
+      },
+      "detail": "Q: 你好，我想退款... → 综合评分 1.000",
+      "metadata": {
+        "question": "你好，我想退款",
+        "response": "您好。可以的，退款需要先核对订单信息。\n\n退款能否成功以及具体金额，需要根据您这笔订单的实际状态和支付情况来判断。为确保准确性，麻烦您提供以下信息，我会帮您进一步核实：\n\n1.  **订单号或交易号**（这是最关键的信息）\n2.  **支付时间** 和 **支付渠道**（例如：微信、支付宝、银行卡等）\n3.  **订单金额** 及 **实付金额**（如使用了优惠券或余额，也请一并告知）\n\n您可以把这些信息直接发给我。在信息确认前，我暂时无法承诺退款结果，但会尽快帮您核实情况并说明后续处理流程。",
+        "agent_type": "billing",
+        "intent": "refund",
+        "turn": 0,
+        "conv_id": "eval_8",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_8_turn_1",
+      "passed": true,
+      "scores": {
+        "relevance": 1,
+        "accuracy": 1,
+        "completeness": 1,
+        "helpfulness": 1,
+        "compliance": 1,
+        "overall": 1
+      },
+      "detail": "Q: 订单号是 #12345... → 综合评分 1.000",
+      "metadata": {
+        "question": "订单号是 #12345",
+        "response": "好的，已收到您的订单号 **#12345**。\n\n为保证后续处理的准确性，在查询退款资格前，还需请您再确认以下两项信息：\n\n1.  **支付时间** 和 **支付渠道**（例如：微信、支付宝、银行卡等）；\n2.  **实付金额**（如使用了优惠券、余额或积分，请一并告知）。\n\n补充这些信息后，我会立即为您查询该订单的当前状态，并确认是否具备退款条件。\n\n**请注意**：即便订单状态允许退款，**实际金额的退回**仍需由人工审核后操作，我无法直接为您执行资金划转，但会协助您将申请准确提交至审核环节。",
+        "agent_type": "billing",
+        "intent": "refund",
+        "turn": 1,
+        "conv_id": "eval_8",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_8_turn_2",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 0.95,
+        "completeness": 0.85,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.92
+      },
+      "detail": "Q: 退款多久能到账？... → 综合评分 0.920",
+      "metadata": {
+        "question": "退款多久能到账？",
+        "response": "关于您订单 **#12345** 的退款到账时间，我需要先向您说明：\n\n**退款到账时间取决于支付渠道和订单审核状态**，目前还无法给出确切时间。通常流程和时效如下：\n\n1. **审核阶段**：退款申请需先通过人工审核，这个时间视订单状态而定，一般需要 1-3 个工作日。\n2. **退回阶段**：审核通过后，款项将**原路退回**至您的原支付账户。不同渠道处理时效不同：\n   - **微信/支付宝**：通常较快，预计 1-3 个工作日；\n   - **银行卡**：预计 3-7 个工作日；\n   - **企业转账/线下支付**：审核及处理时间会更长，需另行核实。\n\n**需要注意**：\n\n- 以上时间均为**常规预估**，实际到账以支付渠道的处理结果为准。\n- 目前我还需要您补充 **支付时间和支付渠道**，才能进一步核实您的订单状态并确认可退金额（是否涉及优惠券、余额等）。补充后我会尽快为您提交人工审核。\n\n如果您之前通过微信/支付宝支付，也可以先留意原账户的入账通知。请问您方便提供这两项信息吗？",
+        "agent_type": "billing",
+        "intent": "refund",
+        "turn": 2,
+        "conv_id": "eval_8",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_9_turn_0",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.8,
+        "compliance": 1,
+        "overall": 0.92
+      },
+      "detail": "Q: 我的快递发到哪了？... → 综合评分 0.920",
+      "metadata": {
+        "question": "我的快递发到哪了？",
+        "response": "您好，查询快递物流信息需要提供订单号。请您提供一下您的订单号，我马上帮您查询具体物流进度。",
+        "agent_type": "general",
+        "intent": "logistics",
+        "turn": 0,
+        "conv_id": "eval_9",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_9_turn_1",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.9400000000000001
+      },
+      "detail": "Q: 单号是 ORD-999... → 综合评分 0.940",
+      "metadata": {
+        "question": "单号是 ORD-999",
+        "response": "抱歉，我查询了一下，系统中没有找到订单号 **ORD-999** 的物流记录。麻烦您核实一下单号是否准确，或者有没有其他关联的订单号？\n\n如果确认无误，可能需要您再核对一下下单平台，我可以帮您转接人工客服进一步处理。",
+        "agent_type": "general",
+        "intent": "logistics",
+        "turn": 1,
+        "conv_id": "eval_9",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_9_turn_2",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 0.95,
+        "completeness": 0.85,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.92,
+        "tool_extraction": 1
+      },
+      "detail": "Q: ORD-20240122-005... → 综合评分 0.920 [参数提取: 成功]",
+      "metadata": {
+        "question": "ORD-20240122-005",
+        "response": "您好，我查询到订单 **ORD-20240122-005** 目前的状态是**尚未发货**，因此暂时还没有物流信息。\n\n请您耐心等待一下，商家通常会在承诺的发货时间内完成出库。如果超过了最晚发货时间仍未更新，建议您提供下单平台信息，我帮您转接人工客服进一步核实。有其他问题随时找我～",
+        "agent_type": "general",
+        "intent": "logistics",
+        "turn": 2,
+        "conv_id": "eval_9",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_10",
+      "passed": true,
+      "scores": {
+        "relevance": 1,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.96,
+        "tool_extraction": 1
+      },
+      "detail": "Q: 查一下 ORD-20240122-005 的物流... → 综合评分 0.960 [参数提取: 成功]",
+      "metadata": {
+        "question": "查一下 ORD-20240122-005 的物流",
+        "response": "您查询的订单 **ORD-20240122-005** 目前**尚未发货**，因此暂时没有物流信息。\n\n请问需要我为您**催发货**或**查看预计发货时间**吗？如果需要人工进一步处理，也可以帮您转接专业客服。",
+        "agent_type": "general",
+        "intent": "logistics",
+        "turn": 0,
+        "conv_id": "eval_10",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_11",
+      "passed": true,
+      "scores": {
+        "relevance": 1,
+        "accuracy": 1,
+        "completeness": 1,
+        "helpfulness": 1,
+        "compliance": 1,
+        "overall": 1,
+        "tool_extraction": 1
+      },
+      "detail": "Q: 查一下 ORD-20240118-004 的物流... → 综合评分 1.000 [参数提取: 成功]",
+      "metadata": {
+        "question": "查一下 ORD-20240118-004 的物流",
+        "response": "好的，我来为您查询订单 ORD-20240118-004 的物流信息。\n\n根据系统显示，该订单对应的物流单号为 **YT6655443322**（圆通速递），目前状态为 **已签收**。\n\n以下是详细的物流轨迹：\n- **1月19日 09:00**：快件在杭州余杭区揽收。\n- **1月20日 06:00**：从杭州转运中心发出。\n- **1月20日 18:00**：到达上海转运中心。\n- **1月21日 09:00**：在上海普陀区开始派送。\n- **1月21日 15:00**：在上海普陀区已签收。\n\n您的包裹已于1月21日下午送达，签收地点在上海普陀区。请问还有其他需要帮助的吗？",
+        "agent_type": "general",
+        "intent": "logistics",
+        "turn": 0,
+        "conv_id": "eval_11",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_12_turn_0",
+      "passed": true,
+      "scores": {
+        "relevance": 0.7,
+        "accuracy": 0.9,
+        "completeness": 0.8,
+        "helpfulness": 0.7,
+        "compliance": 1,
+        "overall": 0.82
+      },
+      "detail": "Q: 帮我把收货地址改成北京市朝阳区... → 综合评分 0.820",
+      "metadata": {
+        "question": "帮我把收货地址改成北京市朝阳区",
+        "response": "您提到的地址修改请求，我需要和您确认一下：**地址修改通常属于订单配送管理，而非账单服务范围**。\n\n不过，为了帮您尽快解决问题，我可以给您提供以下指引：\n\n1.  **关于您提供的信息**：您给出的 `order_id` 目前是空的，我无法直接查询订单。\n2.  **通常操作路径**：地址修改一般需要在订单详情页或联系电商平台客服完成。由于我这里无法操作订单系统，无法直接为您修改地址。\n3.  **建议下一步**：\n    *   请确认您所述的是**账单（发票）邮寄地址**，还是**商品配送地址**。\n    *   如果是**账单邮寄地址**，请您补充相关信息，我可以协助核实。\n    *   如果是**商品配送地址**，请前往对应平台的“我的订单”中操作，或联系该平台的订单客服。\n\n请问您需要修改的是哪一类地址呢？如果可以，请提供具体的 **order_id**，以便我更好地帮您。",
+        "agent_type": "billing",
+        "intent": "account",
+        "turn": 0,
+        "conv_id": "eval_12",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_12_turn_1",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 0.9,
+        "completeness": 0.8,
+        "helpfulness": 0.8,
+        "compliance": 1,
+        "overall": 0.88
+      },
+      "detail": "Q: 不对不对，是海淀区... → 综合评分 0.880",
+      "metadata": {
+        "question": "不对不对，是海淀区",
+        "response": "明白了，您要修改的是**海淀区**，而不是朝阳区，谢谢您的更正！\n\n不过，我这边依然无法直接操作订单系统来修改配送地址，需要和您确认：\n\n1.  **请提供订单号**：您提到的订单号目前是空的，我需要这个信息才能帮您进一步核实订单状态。\n2.  **确认地址类型**：您要修改的是**商品配送地址**，还是**账单/发票邮寄地址**？\n    *   如果是**商品配送地址**：建议您直接前往对应购物平台的“我的订单”中操作，或联系该平台的订单客服，修改会更快捷准确。\n    *   如果是**账单邮寄地址**：请您提供订单号，我可以协助创建工单处理。\n\n请问您方便提供一下**订单号**吗？或者告知您是通过哪个平台（如淘宝、京东等）下的单？",
+        "agent_type": "general",
+        "intent": "request",
+        "turn": 1,
+        "conv_id": "eval_12",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_12_turn_2",
+      "passed": true,
+      "scores": {
+        "relevance": 0.8,
+        "accuracy": 0.9,
+        "completeness": 0.7,
+        "helpfulness": 0.7,
+        "compliance": 1,
+        "overall": 0.82
+      },
+      "detail": "Q: 电话也改成 13800138000... → 综合评分 0.820",
+      "metadata": {
+        "question": "电话也改成 13800138000",
+        "response": "好的，您希望把预留电话也更新为 **13800138000**。\n\n但我目前依然无法直接操作订单系统，修改电话和地址都涉及账户安全验证。为了尽快帮您处理，需要请您提供以下关键信息：\n\n1.  **订单号**：您之前提到的订单号目前是空的，这是核实订单的唯一凭证。\n2.  **订单来源平台**：您是通过哪个平台（如京东、淘宝等）下的单？\n\n如果您能提供**订单号**，我也许可以协助您创建工单，提交给相应团队核实处理。\n\n不过，为了您的账户安全，通常这类核心信息修改需在官方App或网站完成实名验证。您也可以尝试直接访问下单平台的“我的订单-修改地址/联系方式”功能，那里通常可以直接操作。\n\n请问您方便提供订单号吗？",
+        "agent_type": "general",
+        "intent": "request",
+        "turn": 2,
+        "conv_id": "eval_12",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_13_turn_0",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.9400000000000001
+      },
+      "detail": "Q: 你们发票开错抬头了... → 综合评分 0.940",
+      "metadata": {
+        "question": "你们发票开错抬头了",
+        "response": "我理解您需要处理发票抬头错误的问题。这通常需要人工审核后才能修改或作废重开，尤其是可能涉及跨月或已报销的情况，我需要先帮您核实。\n\n为了尽快帮您处理，请您提供以下**必要核验信息**：\n\n1.  **订单号**：您账单中的订单号或交易号。\n2.  **发票信息**：错误的具体抬头（公司或个人名称）以及正确的抬头是什么。\n3.  **发票类型与状态**：是电子发票还是纸质发票？是否已用于报销？\n4.  **支付信息**：对应的支付时间和支付渠道（如微信、支付宝、银行卡等）。\n\n**当前说明**：\n*   发票抬头修改**需要核验订单状态和开票记录**。如果是跨月、已经抵扣或已报销的发票，处理流程会更复杂，且**不一定能无条件修改或重开**。\n*   修改抬头通常涉及发票作废或红冲，这**必须经过人工和财务审核**，我无法直接为您操作。\n\n**下一步处理**：\n*   您可以通过官方渠道提交申请，或在确认上述信息后告知我，我会记录并协助您**转交人工审核**。\n*   请您保留好支付凭证和原发票，这是处理修改的必要依据。\n\n请补充这些信息，我会进一步帮您跟进。",
+        "agent_type": "billing",
+        "intent": "invoice",
+        "turn": 0,
+        "conv_id": "eval_13",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_13_turn_1",
+      "passed": true,
+      "scores": {
+        "relevance": 0.95,
+        "accuracy": 0.9,
+        "completeness": 0.9,
+        "helpfulness": 0.85,
+        "compliance": 1,
+        "overall": 0.92
+      },
+      "detail": "Q: 我要改成'北京网络科技有限公司'... → 综合评分 0.920",
+      "metadata": {
+        "question": "我要改成'北京网络科技有限公司'",
+        "response": "您好，我已收到您需要将发票抬头修改为“**北京网络科技有限公司**”的请求，并记录到您的档案中。\n\n根据流程，修改发票抬头涉及作废或红冲原发票，**必须经过人工和财务审核**，我无法直接操作。不过我需要先为您核验订单状态，并向您同步当前的处理进度与要求：\n\n**请您提供以下必要核验信息以便跟进：**\n\n1. **订单号**：账单中的订单号或交易号（您当前档案中尚未提供）。\n2. **原发票抬头**：发票上目前错误的具体抬头名称。\n3. **发票类型与状态**：是电子发票还是纸质发票？是否已用于报销或抵扣？\n4. **支付信息**：对应的支付时间和支付渠道（如微信、支付宝、银行卡等）。\n\n**当前说明与重要提醒：**\n\n- **不可直接修改**：发票抬头修改无法在线自助完成，需要人工核实开票记录、订单状态及税务合规要求。\n- **跨月/已抵扣/已报销**：若发票已跨月、已被税务抵扣或已报销，处理流程会更复杂，**不一定能无条件修改或重开**，需以财务最终审核结果为准。\n- **请勿重复提交**：在人工审核完成前，请勿重复提交相同请求，以免造成信息冲突或延迟处理。\n\n**下一步处理建议：**\n\n- 请您在**官方渠道**提交正式的“发票抬头修改申请”，或在此补充上述所有信息，我会为您详细记录并协助**转交人工审核**。\n- 请注意保留好**原发票**和**支付凭证**，这是处理改抬头的必要依据。\n\n请补充这些信息，我会继续帮您跟进。",
+        "agent_type": "billing",
+        "intent": "invoice",
+        "turn": 1,
+        "conv_id": "eval_13",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_13_turn_2",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 0.95,
+        "completeness": 0.9,
+        "helpfulness": 0.85,
+        "compliance": 1,
+        "overall": 0.92
+      },
+      "detail": "Q: 那多久能把新发票发给我邮箱？... → 综合评分 0.920",
+      "metadata": {
+        "question": "那多久能把新发票发给我邮箱？",
+        "response": "我理解您很关心新发票何时能发到邮箱。**这一点需要等人工和财务审核通过后才能确定**，我目前无法直接承诺具体时间。\n\n通常发票抬头修改（作废重开/红冲）的处理流程会比较谨慎，预计需要**几个工作日**，到账和开票时间**以支付渠道和财务处理结果为准**。如果发票已跨月、已抵扣或已报销，审核会更严格，**时间也更难预估**。\n\n为了让审核尽快推进，目前**最需要您补充的是订单号**（您的档案中还没有显示）。请问能否提供一下：\n\n1.  **订单号或交易号**\n2.  **原发票抬头**（当前错误的名称）\n3.  **原发票是电子版还是纸质版**\n\n有了这些信息，我可以为您记录并**协助转交人工审核**，这样流程才能启动。请您先补充这些关键信息，我会继续为您跟进。",
+        "agent_type": "billing",
+        "intent": "invoice",
+        "turn": 2,
+        "conv_id": "eval_13",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_13_turn_3",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 0.95,
+        "completeness": 0.85,
+        "helpfulness": 0.8,
+        "compliance": 1,
+        "overall": 0.9
+      },
+      "detail": "Q: 哦对了，税号是 911100001234567890... → 综合评分 0.900",
+      "metadata": {
+        "question": "哦对了，税号是 911100001234567890",
+        "response": "您好，我已记录您提供的**税号（911100001234567890）**。\n\n需要向您说明的是，这个号码是您用来核验的**纳税人识别号**，而处理发票抬头修改时，我们还需要**订单号或交易号**来定位具体的支付记录。目前您档案中还没有显示这部分信息。\n\n为了启动人工审核，还请您补充以下必要信息：\n\n1. **订单号或交易号**：在您账单或支付凭证上可以找到（通常以字母或数字开头的一长串编号）。\n2. **原发票抬头**：发票上现存的具体错误抬头（公司或个人名称）。\n3. **发票类型与状态**：是电子发票还是纸质发票？是否已用于报销或税务抵扣？\n\n有了这些信息，我可以为您完整记录并**转交人工审核**处理。在补充信息前，审核流程暂时无法推进，需要麻烦您确认一下。",
+        "agent_type": "billing",
+        "intent": "invoice",
+        "turn": 3,
+        "conv_id": "eval_13",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_13_turn_4",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 0.95,
+        "completeness": 0.9,
+        "helpfulness": 0.85,
+        "compliance": 1,
+        "overall": 0.92
+      },
+      "detail": "Q: 发给我之前能让我核对一下吗？... → 综合评分 0.920",
+      "metadata": {
+        "question": "发给我之前能让我核对一下吗？",
+        "response": "当然可以，您放心！**在新发票正式发出前，我一定会先提供给您核对**，确认无误后再安排发送。\n\n不过要启动后续流程，目前还差几个关键信息需要您补充（您的订单号在档案中仍显示为空）：\n\n1. **订单号或交易号**：用于定位您的具体支付记录。\n2. **原发票抬头**：当前错误的公司或个人名称。\n3. **原发票是电子版还是纸质版**：这决定了处理方式（作废重开或红冲）。\n\n这些信息补充完整后，我会为您记录并**转交人工审核**。审核通过后，新发票内容会先与您确认，再发送到您指定邮箱。请先提供一下订单号吧，这样能加快处理进度。",
+        "agent_type": "general",
+        "intent": "request",
+        "turn": 4,
+        "conv_id": "eval_13",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_14_turn_0",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.95,
+        "helpfulness": 0.95,
+        "compliance": 1,
+        "overall": 0.96
+      },
+      "detail": "Q: 密码忘了... → 综合评分 0.960",
+      "metadata": {
+        "question": "密码忘了",
+        "response": "好的，您提到了“密码忘了”以及之前提供的结构化实体 `{\"order_id\": []}`。\n\n由于数组是空的，我目前无法定位到您的具体订单。为了帮您高效解决问题，请按照以下步骤操作：\n\n**第一步：请提供必要信息**\n\n为了验证您的身份并找到对应的账号，请您**补充以下至少一项信息**（直接在对话框中回复即可）：\n*   **方式一（推荐）：** 提供您的**注册邮箱**或**绑定的手机号**（用于身份验证）。\n*   **方式二：** 提供您的**具体订单号**（即补充 `order_id` 数组中的内容，格式如 `{\"order_id\": [\"123456\"]}`）。\n\n**第二步：自行重置密码（无需等待）**\n\n如果您能**独立完成身份验证**，建议您直接通过官方渠道重置：\n1.  打开登录页面，点击“**忘记密码**”或“**无法登录**”。\n2.  按照提示输入**注册邮箱/手机号**。\n3.  查收**验证邮件/短信**，点击链接或输入验证码后设置新密码。\n\n**第三步：如果自助重置失败（需升级处理）**\n\n当您遇到以下情况，说明需要**高级技术/客服人员**介入处理，**请勿在此继续尝试**：\n*   您**没有**访问注册邮箱/手机的权限（如邮箱注销、手机号停用）。\n*   系统提示“账号不存在”，但您确认注册过。\n*   身份验证环节反复失败（无法通过密保问题或验证码）。\n\n**此时，请直接拨打官方客服热线（或在线提交工单），并告知客服：**“我需要重置密码，但无法通过自助渠道验证，我的注册信息是【提供您的邮箱或手机号】，请求后台管理员协助。” ——**请注意，此类涉及账号安全的后台操作，必须由您本人通过人工客服核实身份后完成，无法在此直接处理。**\n\n---\n\n**为了继续帮您，请回复：** 您的**注册邮箱**或**手机号**（我会尝试为您核对是否存在账号），或者直接提供一个**具体的订单号**。",
+        "agent_type": "technical",
+        "intent": "technical_login",
+        "turn": 0,
+        "conv_id": "eval_14",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_14_turn_1",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.8,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.92
+      },
+      "detail": "Q: 手机号是 13800138000... → 综合评分 0.920",
+      "metadata": {
+        "question": "手机号是 13800138000",
+        "response": "好的，已收到您的手机号 **13800138000**。请您稍等，我马上为您核实该号码名下的账号及订单情况。\n\n**重要安全说明：** 鉴于您此前提到“密码忘了”，为了保障您的账户安全，我将**仅**协助您查询与该号码关联的订单概要。若涉及任何密码重置、解绑或敏感信息的修改，**必须由您本人通过官方人工客服完成身份验证**，我无法在此直接操作。\n\n---\n\n**请您再次确认：** 为了精准定位，请确认您想要查询的是与 **13800138000** 关联的**订单记录**，还是需要申请**退款/发票**？请回复对应的数字：\n1. 查询订单状态/明细\n2. 申请退款\n3. 发票问题\n4. 取消订阅/续费\n\n收到您的选择后，我会立即尝试为您查询。",
+        "agent_type": "billing",
+        "intent": "account",
+        "turn": 1,
+        "conv_id": "eval_14",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_14_turn_2",
+      "passed": true,
+      "scores": {
+        "relevance": 0.95,
+        "accuracy": 0.95,
+        "completeness": 0.9,
+        "helpfulness": 0.95,
+        "compliance": 1,
+        "overall": 0.95
+      },
+      "detail": "Q: 收不到验证码... → 综合评分 0.950",
+      "metadata": {
+        "question": "收不到验证码",
+        "response": "好的，已收到您的反馈：“收不到验证码”。\n\n结合您之前提供的手机号 **13800138000**，问题指向非常明确：您正在尝试通过短信验证码重置密码，但**一直无法收到短信**。\n\n针对“收不到验证码”这一情况，请先按以下**自助排查步骤**操作：\n\n**第一步：常见原因排查（无需等待）**\n\n1.  **检查短信拦截**：请打开手机的“短信”应用，查看是否被系统自动归入“垃圾短信”或“拦截短信”文件夹。\n2.  **核对号码状态**：请确认该手机号当前**信号正常**且**未欠费停机**（特别是在运营商黑名单或携号转网后，部分平台短信可能接收异常）。\n3.  **检查发送频率限制**：部分系统在短时间内多次请求验证码会触发风控，导致不再发送。如果您刚才已点击多次，请**等待 5-10 分钟**后再次尝试。\n4.  **语音验证码替代**：请在“获取验证码”按钮附近，查找 **“尝试语音播报”** 或 **“收不到短信？改用语音验证”** 的链接，点击后系统会改为电话呼入播报验证码。\n\n---\n\n**第二步：如果以上排查无效（需升级处理）**\n\n若您已确认手机信号正常、无拦截、且等待时间超过10分钟，仍未收到任何短信或语音电话，这通常说明**验证短信服务端下发异常**或**您的账号被系统风控锁定**。\n\n**请注意：这已超出自助排查范围，此操作涉及账号安全及后台短信通道，必须升级至人工客服处理。**\n\n**请您立即拨打官方客服热线（或在线提交工单），并按照以下话术告知客服：**\n\n> “我使用手机号 13800138000 重置密码，但一直收不到验证码，短信和语音都试过了。已确认手机无拦截且信号正常，怀疑是后台通道异常，请求技术部门排查并协助重置。”\n\n---\n\n**为了继续协助您，请回复：**\n1.  您是否已尝试点击 **“语音验证码”** ？（是/否）\n2.  您手机上是否安装了 **拦截软件**（如360、手机管家等）？（是/否）\n\n待您回复后，我再判断能否引导您进一步操作，或确认必须转人工。",
+        "agent_type": "technical",
+        "intent": "technical_login",
+        "turn": 2,
+        "conv_id": "eval_14",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_14_turn_3",
+      "passed": true,
+      "scores": {
+        "relevance": 0.95,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.95,
+        "compliance": 1,
+        "overall": 0.96
+      },
+      "detail": "Q: 还是收不到，你直接用人工帮我改吧... → 综合评分 0.960",
+      "metadata": {
+        "question": "还是收不到，你直接用人工帮我改吧",
+        "response": "您好，非常理解您现在焦急的心情，密码重置不了确实很耽误事。\n\n不过，需要跟您明确说明一点：**重置密码属于涉及账号安全的高风险操作，我作为智能客服，没有权限也无法直接为您修改**。这必须由您本人通过**人工客服**核实身份后才能完成，以确保是账号本人操作，保障您的账户安全。\n\n为了减少您转人工后的等待时间，请您**立即**通过以下任一官方渠道联系人工客服，并告诉他们：\n\n> “我使用手机号 13800138000 重置密码，但一直收不到验证码，短信和语音都试过了，已确认手机无拦截且信号正常，怀疑是后台通道异常，请求技术部门排查并协助重置。”\n\n**转人工渠道（任选其一）：**\n\n1.  **官方客服热线**（推荐，处理最快）：请查找官网或App内公示的热线号码拨打。\n2.  **在线工单**：在官网或App的“帮助与反馈”中提交工单，提交时请勾选“账号安全问题”，并附上您的手机号和上述描述。\n\n**为了帮您确认进展，请回复：**\n您能看到官方客服热线的号码，还是需要我帮您确认官网或App中提交工单的入口位置？",
+        "agent_type": "general",
+        "intent": "human_handoff",
+        "turn": 3,
+        "conv_id": "eval_14",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    },
+    {
+      "test_id": "dialog_14_turn_4",
+      "passed": true,
+      "scores": {
+        "relevance": 0.9,
+        "accuracy": 1,
+        "completeness": 0.9,
+        "helpfulness": 0.9,
+        "compliance": 1,
+        "overall": 0.9400000000000001
+      },
+      "detail": "Q: 好的，我提供下身份证号。... → 综合评分 0.940",
+      "metadata": {
+        "question": "好的，我提供下身份证号。",
+        "response": "您好，我理解您非常想尽快解决问题，所以愿意提供更详细的身份信息。这确实能加快核实速度。\n\n不过需要向您说明：**身份证号属于极其敏感的个人信息，涉及您的核心隐私和安全。** 作为智能客服，我无法在此接收、存储或验证您的身份证号，这超出了我的安全处理能力范围。\n\n为了确保您的信息安全并高效解决问题，请您**务必**通过以下**人工客服渠道**提供该信息（他们具备安全加密的处理系统）：\n\n1.  **官方客服热线**（最快）：请直接拨打官网或App公示的热线。接通后告知客服：“我使用手机号 13800138000 重置密码收不到验证码，现在提供身份证号进行身份核验，请求后台协助重置。”\n2.  **在线官方工单**：在官网或App的“帮助与反馈”中，选择“账号安全”类目提交工单。在**加密的**信息栏中，按客服指引提供身份证号后六位或完整信息。\n\n---\n\n**请切记：**\n- 切勿在非官方、无加密的对话界面（包括此聊天窗口）透露完整身份证号。\n- 人工客服在核实身份后，会指导您完成密码重置，或为您进行后台安全操作。\n\n**为了帮您确认下一步，您需要我帮您查找官方客服热线的具体号码，或者在线工单的提交入口在哪里吗？**",
+        "agent_type": "general",
+        "intent": "human_handoff",
+        "turn": 4,
+        "conv_id": "eval_14",
+        "judge_failed": false,
+        "judge_error": null
+      }
+    }
+  ]
+}

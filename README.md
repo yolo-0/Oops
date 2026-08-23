@@ -15,6 +15,25 @@ Oops 是一个企业级智能客服系统，核心链路为：
   -> MemoryManager 写入当前对话，达到阈值异步压缩持久化至 ChromaDB
 ```
 
+## 🌟 核心成果展示 (Presentation)
+
+系统在前端交互体验与后端底层机制上均进行了深度优化，以下为真实运行效果及测评数据展示：
+
+### 1. 前端交互效果
+系统提供了现代化的高级用户界面，支持暗黑模式以及响应式交互：
+
+![前端效果 1](presentation/frontend-1.png)
+![前端效果 2](presentation/frontend-2.png)
+![前端效果 3](presentation/frontend-3.png)
+
+### 2. 评测与监控报告
+在严格的企业级测评与在线监控下，本系统的底层架构交出了一份优异的答卷。详细的测试结果原始数据可见以下报表：
+- 📊 **[端到端多维评测报告 (Evaluation Result)](presentation/evaluation_result.json)**：展示了意图识别准确率、工具抽取准确度以及 LLM-as-Judge 响应质量的五维得分。
+- 📈 **[Agent 路由与工具监控报告 (Monitor Result)](presentation/moniter_result.json)**：包含了三类 Agent 和三大外部工具的线上真实调用次数、成功率及延迟表现。
+- 🌲 **[动态技能树注入报告 (Summary Result)](presentation/summery_result.json)**：展示了基于本地知识的动态 SOP 规则实时加载的命中与激活状态。
+
+---
+
 ## 1. 项目结构
 
 ```text

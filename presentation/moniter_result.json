@@ -1,0 +1,50 @@
+{
+  "agent_stats": {
+    "general_0": {
+      "total": 13,
+      "success_rate": 1,
+      "avg_ms": 2015.3,
+      "monitor_penalty": 0,
+      "routing_score": 0.799
+    },
+    "technical_0": {
+      "total": 4,
+      "success_rate": 1,
+      "avg_ms": 5840.6,
+      "monitor_penalty": 0,
+      "routing_score": 0.744
+    },
+    "billing_0": {
+      "total": 12,
+      "success_rate": 1,
+      "avg_ms": 3030.6,
+      "monitor_penalty": 0,
+      "routing_score": 0.774
+    }
+  },
+  "tool_stats": {
+    "query_order": {
+      "total": 0,
+      "success_rate": 1,
+      "avg_latency_ms": 0,
+      "consecutive_fails": 0,
+      "circuit_state": "closed"
+    },
+    "query_logistics": {
+      "total": 5,
+      "success_rate": 1,
+      "avg_latency_ms": 0.1,
+      "consecutive_fails": 0,
+      "circuit_state": "closed"
+    },
+    "knowledge_search": {
+      "total": 0,
+      "success_rate": 1,
+      "avg_latency_ms": 0,
+      "consecutive_fails": 0,
+      "circuit_state": "closed"
+    }
+  },
+  "active_alerts": [],
+  "suggestions": []
+}
