@@ -1463,4 +1463,50 @@ curl http://localhost:8000/skills
 
 # 9. 评测
 curl -X POST http://localhost:8000/eval/run
+```## 14. 停止、重启和清理
+
+停止服务：
+
+```bash
+docker compose stop
 ```
+
+重启服务：
+
+```bash
+docker compose restart oops
+```
+
+停止并删除容器，但保留数据卷：
+
+```bash
+docker compose down
+```
+
+停止并删除容器和数据卷：
+
+```bash
+docker compose down -v
+```
+
+重新构建并启动：
+
+```bash
+docker compose up -d --build
+```
+
+## 📚 详细文档导航 (Documentation)
+
+为了方便查阅，我们将项目的详细架构说明和 API 参考文档进行了分类归档。**推荐在快速体验后，深入阅读以下文档：**
+
+- 🔗 [API 参考与调用示例 (API Reference)](docs/api_reference.md)
+  - 详细的 `/chat`, `/knowledge`, `/monitor`, `/eval` 等接口说明
+  - 丰富的 `curl` 调用示例和多轮对话演示
+- 🔗 [存储与记忆架构解析 (Memory & Storage)](docs/memory_and_storage.md)
+  - 四级记忆架构底层的具体实现机制
+  - 如何在 Docker 容器中查看/调试 ChromaDB 和 Redis 数据
+- 🔗 [高级特性：评测、监控与工具 (Advanced Features)](docs/advanced_features.md)
+  - 端到端评测框架 (LLM-as-Judge) 与 Memory Benchmark 白盒记忆评测引擎
+  - MCP 工具调度机制 (改写/缓存/重排/熔断) 与在线监控平台
+- 🔗 [常见问题排查 (FAQ)](docs/faq.md)
+  - 各类环境报错排查（如 503、Redis 认证失败）与详细的测试验证流程日志\n
