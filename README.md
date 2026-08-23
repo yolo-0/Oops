@@ -7,30 +7,36 @@ Oops 是一个企业级智能客服系统，核心链路为：
 ```text
 用户请求
   -> FastAPI /chat
-  -> MemoryManager 读取 Redis 工作记忆 + ChromaDB 情景记忆 + 用户画像
-  -> IntentRecognizer 识别意图
-  -> AgentOrchestrator 路由到 General/Technical/Billing Agent
-  -> LLM 生成回复
-  -> 写入 Redis，并异步更新 ChromaDB 用户画像
+  -> MemoryManager 构建四级记忆上下文 (Redis工作记忆 + ChromaDB服务经历/用户画像/用户承诺)
+  -> IntentRecognizer 意图识别 (LLM语义/Embedding相似度/Pattern正则 三路融合与降级)
+  -> AgentOrchestrator 路由分发 (动态加载专属业务 Skills)
+  -> ToolManager 调度工具 (执行查询改写、并行召回、LLM重排、降级与熔断)
+  -> LLM 融合各类上下文生成最终回复
+  -> MemoryManager 写入当前对话，达到阈值异步压缩持久化至 ChromaDB
 ```
 
 ## 1. 项目结构
 
 ```text
 Oops/
-├── api/main.py                    # FastAPI 入口，/chat /search /knowledge /monitor /eval
-├── core/intent_recognizer.py      # 三路融合意图识别
-├── agents/agent_orchestrator.py   # 多 Agent 路由编排
-├── memory/conversation_memory.py  # Redis + ChromaDB 记忆管理
-├── mcp/tool_manager.py            # MCP 工具调用、查询改写、重排、熔断、缓存、降级
-├── mcp/knowledge_base.py          # ChromaDB RAG 知识库
-├── monitor/performance_monitor.py # Agent/工具在线监控
-├── evaluation/evaluator.py        # 端到端评测
+├── api/main.py                    # FastAPI 入口路由
+├── core/
+│   ├── intent_recognizer.py       # 三路融合意图识别与降级
+│   └── skill_loader.py            # 动态业务规则加载
+├── agents/agent_orchestrator.py   # 多 Agent 路由与 Prompt 动态编排
+├── memory/conversation_memory.py  # 四级记忆管理器 (Redis + ChromaDB)
+├── mcp/
+│   ├── tool_manager.py            # 高级工具调度 (改写/重排/熔断/缓存)
+│   ├── knowledge_base.py          # ChromaDB RAG 知识库检索
+│   └── business_tools.py          # 外部系统业务接口模拟对接
+├── evaluation/
+│   ├── evaluator.py               # LLM-as-Judge 端到端多维质量评测
+│   └── memory_evaluator.py        # 记忆准确性专项评测
+├── monitor/performance_monitor.py # Agent/工具在线监控与告警
+├── frontend/                      # Vue 3 现代化前端交互界面
+├── skills/                        # 业务规则与 SOP (Markdown 热加载)
 ├── data/demo_docs/                # 演示知识库文档
-├── docker-compose.yml             # Docker 全栈编排
-├── Dockerfile
-├── requirements.txt
-└── .env
+└── docker-compose.yml             # 全栈环境一键编排
 ```
 
 ## 2. 环境准备
