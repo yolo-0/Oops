@@ -972,7 +972,16 @@ TTL wm:user_001:session_001
 
 默认 TTL 是 24 小时。
 
-## 11. 查看工作记忆压缩内容
+## 11. 四级记忆架构与状态查看
+
+Oops 实现了模拟人类记忆机制的四级记忆架构，由 `memory/conversation_memory.py` 管理：
+
+1. **工作记忆 (Working Memory)**：存放在 Redis，记录当前会话的最近对话上下文，支持毫秒级读写。当超过条数（默认 20 条）时触发自动压缩。
+2. **服务经历 (Service Experience / Episodic)**：存放在 ChromaDB，跨会话历史对话经过 LLM 结构化提取后压缩成的服务记录。
+3. **用户画像 (User Profile)**：存放在 ChromaDB，异步从对话中提炼出的用户长期偏好、实体及沟通风格。
+4. **用户承诺 (User Commitments)**：存放在 ChromaDB，记录人工或系统向用户作出的服务承诺，支持超时判定与自动引导人工客服介入。
+
+### 11.1 查看工作记忆与情景压缩
 
 工作记忆压缩发生在 `memory/conversation_memory.py` 中。默认配置：
 
@@ -1134,7 +1143,7 @@ for i, doc in enumerate(data["documents"]):
 PY
 ```
 
-### 11.5 Redis summary 和 ChromaDB episodic 的区别
+### 11.5 Redis 与 ChromaDB 存储区别
 
 | 位置 | 保存内容 | 用途 |
 |------|----------|------|
@@ -1142,7 +1151,17 @@ PY
 | ChromaDB `episodic` | 压缩摘要 + metadata | 跨会话按语义检索相关历史 |
 | Redis `wm:{user_id}:{conv_id}` | 最近 5 条消息 | 保持当前对话连贯性 |
 
-## 12. Monitor 在线监控
+## 12. MCP 工具调用与在线监控
+
+### 12.1 工具调用优化架构
+在 `mcp/tool_manager.py` 中，Oops 针对 Agent 调用工具的常见痛点，实现了高级的工具生命周期管理：
+- **查询改写 (Query Rewriting)**：利用 LLM 将用户原始问题改写成多视角的子查询，再合并去重，解决“召回不全”问题。
+- **结果重排 (Reranking)**：对并发召回的结果使用 LLM 进行相关性打分并重新排序，解决“召回相关性差”问题。
+- **熔断器 (Circuit Breaker)**：检测到下游工具连续失败超阈值时自动熔断（三态模型：Closed/Open/Half-Open），防止雪崩效应。
+- **结果缓存 (TTL Cache)**：相同参数请求直接返回缓存，降低高并发下的 API 调用成本。
+- **降级策略 (Fallback)**：在工具熔断或异常时，平滑降级并返回预设兜底结果。
+
+### 12.2 Monitor 在线监控
 
 查看监控摘要：
 
@@ -1195,19 +1214,25 @@ Prometheus 页面：
 http://localhost:9090
 ```
 
-## 13. 运行端到端评测
+## 13. 端到端评测框架 (LLM-as-Judge)
+
+在 `evaluation/evaluator.py` 中，Oops 提供了全面的端到端评测能力，无需依赖大量人工标注：
 
 ```bash
 curl -X POST http://localhost:8000/eval/run
 ```
 
-评测内容：
+评测核心维度：
 
-1. 意图识别准确率和 Macro-F1
-2. 调用 Orchestrator 生成真实回复
-3. LLM-as-Judge 从相关性、准确性、完整性、有用性打分
-4. 与上一次评测结果做回归检测
-5. 生成优化建议
+1. **意图识别准确率**：计算分类 Accuracy 和 Macro-F1，对比预测意图与标注意图。
+2. **LLM-as-Judge 响应质量打分**：调用 LLM 作为裁判，对 Agent 生成的回复进行五维打分（0.0-1.0）：
+   - **相关性 (Relevance)**：直击问题，持续推进目标。
+   - **准确性 (Accuracy)**：信息无误，无幻觉。
+   - **完整性 (Completeness)**：完整解决需求，必要时主动澄清。
+   - **有用性 (Helpfulness)**：方案直接可用，用户能据此采取行动。
+   - **合规性 (Compliance)**：遵守客服边界，无违规或过度承诺。
+3. **回归检测**：自动与上一次历史基线进行对比，识别性能退化点。
+4. **生成优化建议**：针对丢分项，自动给出具体的系统优化建议（如补充 Few-shot 或调整 prompt）。
 
 响应示例：
 
