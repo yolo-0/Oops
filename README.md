@@ -28,7 +28,7 @@ Oops 是一个企业级智能客服系统，核心链路为：
 
 ### 2. 评测与监控报告
 在严格的企业级测评与在线监控下，本系统的底层架构交出了一份优异的答卷。详细的测试结果原始数据可见以下报表：
-- 📊 **[端到端多维评测报告 (Evaluation Result)](presentation/evaluation_result.json)**：展示了意图识别准确率、工具抽取准确度以及 LLM-as-Judge 响应质量的五维得分。
+- 📊 **[端到端多维评测报告 (Evaluation Result)](presentation/evaluation_result.json)**：展示了意图识别准确率、记忆准确度、工具抽取准确度以及 LLM-as-Judge 响应质量的五维得分。
 - 📈 **[Agent 路由与工具监控报告 (Monitor Result)](presentation/moniter_result.json)**：包含了三类 Agent 和三大外部工具的线上真实调用次数、成功率及延迟表现。
 - 🌲 **[动态技能树注入报告 (Summary Result)](presentation/summery_result.json)**：展示了基于本地知识的动态 SOP 规则实时加载的命中与激活状态。
 
