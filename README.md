@@ -1190,9 +1190,23 @@ curl http://localhost:8000/monitor
   },
   "tool_stats": {
     "knowledge_search": {
-      "total": 5,
+      "total": 24,
+      "success_rate": 0.98,
+      "avg_latency_ms": 145.2,
+      "consecutive_fails": 0,
+      "circuit_state": "closed"
+    },
+    "query_order": {
+      "total": 12,
       "success_rate": 1.0,
-      "avg_latency_ms": 80.2,
+      "avg_latency_ms": 502.1,
+      "consecutive_fails": 0,
+      "circuit_state": "closed"
+    },
+    "query_logistics": {
+      "total": 8,
+      "success_rate": 1.0,
+      "avg_latency_ms": 230.5,
       "consecutive_fails": 0,
       "circuit_state": "closed"
     }
