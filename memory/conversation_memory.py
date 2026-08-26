@@ -121,6 +121,7 @@ class MemoryManager:
         api_key:      str = "",
         base_url:     Optional[str] = None,
         model:        str = "claude-3-5-sonnet-20241022",
+        fast_model:   str = "claude-3-haiku-20240307",
     ):
         kwargs: Dict[str, Any] = {"api_key": api_key}
         if base_url:
@@ -129,7 +130,8 @@ class MemoryManager:
             AsyncAnthropic(**kwargs),
             mode=instructor.Mode.ANTHROPIC_JSON
         )
-        self._model  = model
+        self._model      = model
+        self._fast_model = fast_model
 
         self._redis = redis.from_url(redis_url, decode_responses=True)
 
@@ -237,7 +239,7 @@ class MemoryManager:
         try:
             # pyrefly: ignore [not-async]
             resp = await self._client.messages.create(
-                model=self._model, max_tokens=1024, temperature=0.0,
+                model=self._fast_model, max_tokens=1024, temperature=0.0,
                 thinking={"type": "disabled"},
                 messages=[{"role": "user", "content": prompt}],
                 response_model=UserProfileUpdate,
@@ -405,13 +407,24 @@ class MemoryManager:
         try:
             # pyrefly: ignore [not-async]
             resp = await self._client.messages.create(
-                model=self._model, max_tokens=1024, temperature=0.0,
+                model=self._fast_model, max_tokens=1024, temperature=0.0,
                 thinking={"type": "disabled"},
                 messages=[{"role": "user", "content": prompt}],
                 response_model=ServiceRecords,
             )
             extracted_records = json.dumps(resp.model_dump(), ensure_ascii=False)
-        except Exception:
+            original_len = len(text)
+            compressed_len = len(extracted_records)
+            ratio = original_len / compressed_len if compressed_len > 0 else 0
+            
+            # 记录到监控系统或日志
+            logger.info(
+                f"[Memory Compression] User: {user_id} | "
+                f"Original: {original_len} chars -> Compressed: {compressed_len} chars | "
+                f"Ratio: {ratio:.2f}x"
+            )
+        except Exception as e:
+            logger.error(f"[Memory Compression] Failed to extract service records: {e}")
             extracted_records = f"对话包含 {len(to_compress)} 条消息（服务记录提取失败）"
 
         # 存服务记录到 Redis

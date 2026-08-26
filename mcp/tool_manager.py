@@ -146,7 +146,14 @@ class MCPToolManager:
       用户查询 → 查询改写（多角度子查询）→ 并行召回 → 结果重排 → 返回 Top-K
     """
 
-    def __init__(self, api_key: str, base_url: Optional[str] = None, model: str = "claude-3-5-sonnet-20241022"):
+    def __init__(
+        self,
+        api_key: str,
+        base_url: Optional[str] = None,
+        model: str = "claude-3-5-sonnet-20241022",
+        fast_model: str = "claude-3-haiku-20240307",
+        semantic_cache: Optional[Any] = None
+    ):
         kwargs: Dict[str, Any] = {"api_key": api_key}
         if base_url:
             kwargs["base_url"] = base_url
@@ -154,7 +161,9 @@ class MCPToolManager:
             AsyncAnthropic(**kwargs),
             mode=instructor.Mode.ANTHROPIC_JSON
         )
-        self._model  = model
+        self._model       = model
+        self._fast_model  = fast_model
+        self._semantic_cache = semantic_cache
         self._tools: Dict[str, Tool] = {}
         self._cache: Dict[str, tuple] = {}   # key → (result, expire_at, reranked)
 
@@ -313,7 +322,7 @@ class MCPToolManager:
         try:
             # pyrefly: ignore [not-async]
             resp = await self._client.messages.create(
-                        model=self._model, max_tokens=512, temperature=0.3,
+                        model=self._fast_model, max_tokens=512, temperature=0.3,
                         thinking={"type": "disabled"},
                         messages=[{"role": "user", "content": prompt}],
                         response_model=SubQueries,
@@ -337,6 +346,12 @@ class MCPToolManager:
 
         这是解决"检索不全、召回不好"的完整方案。
         """
+        if getattr(self, "_semantic_cache", None) is not None:
+            cached_data = await self._semantic_cache.get(query, threshold=0.1)
+            if cached_data is not None:
+                logger.info(f"RAG 语义缓存拦截成功: {query!r}")
+                return ToolResult(success=True, data=cached_data, tool_name=tool_name, cached=True)
+
         # 1. 查询改写：生成多角度子查询
         sub_queries = await self.rewrite_query(query, n=3)
         logger.info(f"查询改写: {query!r} → {sub_queries}")
@@ -366,6 +381,10 @@ class MCPToolManager:
 
         # 4. 重排：用 LLM 对合并结果按相关性打分，取 Top-K
         reranked = await self._rerank(query, merged, top_k)
+        
+        if getattr(self, "_semantic_cache", None) is not None:
+            await self._semantic_cache.set(query, reranked, ttl=3600)
+            
         return ToolResult(success=True, data=reranked, tool_name=tool_name, reranked=True)
 
     # ── 结果重排（解决召回不好）──────────────────────────────────────────────
@@ -393,7 +412,7 @@ class MCPToolManager:
         try:
             # pyrefly: ignore [not-async]
             resp = await self._client.messages.create(
-                    model=self._model, max_tokens=512, temperature=0.0,
+                    model=self._fast_model, max_tokens=512, temperature=0.0,
                     thinking={"type": "disabled"},
                     messages=[{"role": "user", "content": prompt}],
                     response_model=RerankOrder,

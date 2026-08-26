@@ -1,4 +1,4 @@
-﻿"""
+"""
 亮点：多 Agent 路由与编排
 
 核心问题：多 Agent 情况下如何做 Routing？
@@ -261,19 +261,27 @@ class AgentOrchestrator:
         api_key:  str,
         base_url: Optional[str] = None,
         model:    str = "claude-3-5-sonnet-20241022",
+        fast_model: str = "claude-3-haiku-20240307",
         skill_manager: Optional[Any] = None,
+        semantic_cache: Optional[Any] = None,
     ):
         kwargs: Dict[str, Any] = {"api_key": api_key}
         if base_url:
             kwargs["base_url"] = base_url
         client = AsyncAnthropic(**kwargs)
 
-        self._intent_recognizer = IntentRecognizer(api_key=api_key, base_url=base_url, model=model)
+        self._intent_recognizer = IntentRecognizer(
+            api_key=api_key, 
+            base_url=base_url, 
+            model=model, 
+            fast_model=fast_model,
+            semantic_cache=semantic_cache
+        )
         self._skill_manager = skill_manager
 
         # Agent 池：每种类型可有多个实例（水平扩展）
         self._pool: Dict[AgentType, List[BaseAgent]] = {
-            AgentType.GENERAL:   [GeneralAgent(client, model, skill_manager)],
+            AgentType.GENERAL:   [GeneralAgent(client, fast_model, skill_manager)],
             AgentType.TECHNICAL: [TechnicalAgent(client, model, skill_manager)],
             AgentType.BILLING:   [BillingAgent(client, model, skill_manager)],
         }

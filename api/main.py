@@ -50,8 +50,9 @@ def _anthropic_cfg() -> Dict[str, Any]:
     if not key:
         raise RuntimeError("未设置 ANTHROPIC_API_KEY")
     cfg: Dict[str, Any] = {
-        "api_key":  key,
-        "model":    os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022").strip(),
+        "api_key":    key,
+        "model":      os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022").strip(),
+        "fast_model": os.getenv("ANTHROPIC_FAST_MODEL", "claude-3-5-haiku-20241022").strip(),
     }
     base_url = os.getenv("ANTHROPIC_BASE_URL", "").strip()
     if base_url:
@@ -74,15 +75,25 @@ async def lifespan(app: FastAPI):
     from memory.conversation_memory import MemoryManager
     from monitor.performance_monitor import PerformanceMonitor
     from core.skill_loader import SkillManager
+    from mcp.semantic_cache import SemanticCache
 
     cfg = _anthropic_cfg()
-    logger.info(f"模型: {cfg['model']}  base_url: {cfg.get('base_url', '(官方)')}")
+    logger.info(f"高质量模型: {cfg['model']}  快速模型: {cfg['fast_model']}  base_url: {cfg.get('base_url', '(官方)')}")
+    
+    # 语义缓存
+    _semantic_cache = SemanticCache(
+        chroma_host=os.getenv("CHROMA_HOST", "chromadb"),
+        chroma_port=int(os.getenv("CHROMA_PORT", "8000")),
+        chroma_path=os.getenv("CHROMA_PERSIST_DIRECTORY", "/app/data/chroma"),
+    )
 
     # 意图识别器（Orchestrator 内部也会创建，这里单独暴露给 Evaluator）
     recognizer = IntentRecognizer(
         api_key=cfg["api_key"],
         base_url=cfg.get("base_url"),
         model=cfg["model"],
+        fast_model=cfg["fast_model"],
+        semantic_cache=_semantic_cache,
     )
 
     # Skills：启动时从目录加载业务能力说明，并在 Agent 调用 LLM 时动态注入。
@@ -98,7 +109,9 @@ async def lifespan(app: FastAPI):
         api_key=cfg["api_key"],
         base_url=cfg.get("base_url"),
         model=cfg["model"],
+        fast_model=cfg["fast_model"],
         skill_manager=_skill_manager,
+        semantic_cache=_semantic_cache,
     )
 
     # 记忆管理器（Redis 工作记忆 + ChromaDB 情景记忆/用户画像）
@@ -110,6 +123,7 @@ async def lifespan(app: FastAPI):
         api_key=cfg["api_key"],
         base_url=cfg.get("base_url"),
         model=cfg["model"],
+        fast_model=cfg["fast_model"],
     )
 
     # MCP 工具管理器 + RAG 知识库（基于 ChromaDB 的真实检索）
@@ -117,6 +131,8 @@ async def lifespan(app: FastAPI):
         api_key=cfg["api_key"],
         base_url=cfg.get("base_url"),
         model=cfg["model"],
+        fast_model=cfg["fast_model"],
+        semantic_cache=_semantic_cache,
     )
     kb = KnowledgeBase(
         chroma_host=os.getenv("CHROMA_HOST", "chromadb"),
@@ -302,11 +318,16 @@ async def chat(req: ChatRequest):
         for m in mem_ctx.recent_messages[-5:]
     ] if mem_ctx.recent_messages else None
 
-    intent_result = await _orchestrator.recognize_intent(req.message, history=history)
-    knowledge_text, knowledge_used = await _build_knowledge_context(req.message, intent=intent_result.intent)
+    # 2. 投机并行：同时开启意图识别和 RAG 检索
+    intent_task = asyncio.create_task(_orchestrator.recognize_intent(req.message, history=history))
+    # 脱离意图依赖，强制传入 intent=None 触发关键词粗排匹配
+    knowledge_task = asyncio.create_task(_build_knowledge_context(req.message, intent=None))
+    
+    intent_result, (knowledge_text, knowledge_used) = await asyncio.gather(intent_task, knowledge_task)
+
+    # 3. 业务上下文（由于依赖 intent_result.entities，必须后置执行）
     business_text, business_used = await _build_business_context(req.message, intent=intent_result.intent, entities=intent_result.entities)
     
-    ## 查询改写（sub_queries）-并行召回（sub_answers）-LLM重排（根据query的相关性排序）
     context_parts = [mem_ctx.to_prompt_text()]
     if knowledge_text: 
         context_parts.append(knowledge_text)
@@ -371,24 +392,36 @@ async def _build_knowledge_context(message: str, intent=None, top_k: int = 3) ->
     try:
         result = await _tool_manager.search_with_rewrite("knowledge_search", message, top_k=top_k)
         if not result.success or not isinstance(result.data, list) or not result.data:
-            return "", False
+            return "[系统指令] 知识库检索未匹配到相关内容。请明确告诉用户“很抱歉，知识库中未找到相关信息，无法为您解答”，严禁自行编造！", True
 
         parts = ["[知识库检索结果]"]
         used = False
+        CONFIDENCE_THRESHOLD = 0.5  # 设定置信度阈值
+
         for i, item in enumerate(result.data[:top_k], start=1):
             if not isinstance(item, dict):
                 continue
             title = str(item.get("title", "未命名文档"))
             content = str(item.get("content", "")).strip()
-            score = item.get("score", "")
+            
+            try:
+                score = float(item.get("score", 0.0))
+            except (ValueError, TypeError):
+                score = 0.0
+                
+            # 过滤掉低于阈值的低质量片段
+            if score < CONFIDENCE_THRESHOLD:
+                continue
+
             if not content:
                 continue
             used = True
             parts.append(f"{i}. 标题: {title}\n   相关度: {score}\n   内容: {content[:600]}")
 
         if not used:
-            return "", False
-        parts.append("请优先依据以上知识库内容回答；如果知识库内容不足，再结合通用客服能力说明。")
+            return "[系统指令] 知识库中未检索到高度匹配的内容（置信度过低）。请明确告诉用户“很抱歉，知识库中未找到足够相关的信息，无法为您解答”，严禁自行编造！", True
+            
+        parts.append("请优先依据以上知识库内容回答，严格遵循其中的业务规则。")
         return "\n".join(parts), True
     except Exception as ex:
         logger.warning(f"构建知识库上下文失败: {ex}")

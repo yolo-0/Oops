@@ -161,7 +161,9 @@ class IntentRecognizer:
         api_key: str,
         base_url: Optional[str] = None,
         model: str = "claude-3-5-sonnet-20241022",
+        fast_model: str = "claude-3-haiku-20240307",
         confidence_threshold: float = 0.5,
+        semantic_cache: Optional[Any] = None,
     ):
         kwargs: Dict[str, Any] = {"api_key": api_key}
         if base_url:
@@ -170,8 +172,10 @@ class IntentRecognizer:
             AsyncAnthropic(**kwargs),
             mode=instructor.Mode.ANTHROPIC_JSON
         )
-        self.model     = model
-        self.threshold = confidence_threshold
+        self.model      = model
+        self.fast_model = fast_model
+        self.threshold  = confidence_threshold
+        self._semantic_cache = semantic_cache
         # 第三方兼容 API（如 DeepSeek）通常不支持 Embedding，禁用该策略。
         # 官方 Anthropic SDK 当前没有 embeddings 资源，因此下面会使用稳定的
         # 本地字符 n-gram 向量作为轻量兜底，保证三路融合链路真实可跑。
@@ -194,6 +198,17 @@ class IntentRecognizer:
 
         history 格式：[{"role": "user"/"assistant", "content": "..."}]
         """
+        if not history and getattr(self, "_semantic_cache", None) is not None:
+            cached_dict = await self._semantic_cache.get(f"intent:{message}", threshold=0.05)
+            if cached_dict:
+                self.cache_hits += 1
+                logger.info(f"意图识别语义缓存命中: {message!r}")
+                # Convert string intent back to Enum
+                cached_dict["intent"] = IntentCategory(cached_dict["intent"])
+                if cached_dict.get("urgency"):
+                    cached_dict["urgency"] = UrgencyLevel(cached_dict["urgency"])
+                return IntentResult(**cached_dict)
+
         key = self._cache_key(message, history)
         if key in self._cache:
             self.cache_hits += 1
@@ -233,6 +248,21 @@ class IntentRecognizer:
             for k in list(self._cache)[:500]:
                 del self._cache[k]
         self._cache[key] = result
+        
+        if not history and getattr(self, "_semantic_cache", None) is not None:
+            # Prepare for JSON serialization
+            cache_data = {
+                "intent": result.intent.value,
+                "confidence": result.confidence,
+                "urgency": result.urgency.value if result.urgency else None,
+                "intent_group": result.intent_group,
+                "entities": result.entities,
+                "reasoning": result.reasoning,
+                "latency_ms": result.latency_ms,
+                "source_scores": result.source_scores,
+            }
+            await self._semantic_cache.set(f"intent:{message}", cache_data, ttl=86400)
+            
         return result
 
     def learn(self, message: str, correct: IntentCategory) -> None:
@@ -282,7 +312,7 @@ class IntentRecognizer:
         try:
             # pyrefly: ignore [not-async]
             resp = await self.client.messages.create(
-                model=self.model,
+                model=self.fast_model,
                 max_tokens=256,
                 thinking={"type": "disabled"},
                 messages=[{"role": "user", "content": prompt}],
