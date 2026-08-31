@@ -27,7 +27,7 @@ from pydantic import BaseModel, Field
 
 from anthropic import AsyncAnthropic
 
-from core.llm_utils import extract_text_content
+from core.llm_utils import extract_text_content, messages_create
 
 logger = logging.getLogger(__name__)
 
@@ -321,7 +321,8 @@ class MCPToolManager:
         prompt = self._clean_text(prompt)
         try:
             # pyrefly: ignore [not-async]
-            resp = await self._client.messages.create(
+            resp = await messages_create(
+                        self._client,
                         model=self._fast_model, max_tokens=512, temperature=0.3,
                         thinking={"type": "disabled"},
                         messages=[{"role": "user", "content": prompt}],
@@ -364,12 +365,17 @@ class MCPToolManager:
         ]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        # 3. 合并去重（按内容哈希去重）
+        # 3. 合并去重（按标题+内容去重，避免同一片段仅因分数不同被重复返回）
         seen, merged = set(), []
         for r in results:
             if isinstance(r, ToolResult) and r.success and isinstance(r.data, list):
                 for item in r.data:
-                    key = hashlib.md5(str(item).encode()).hexdigest()
+                    if isinstance(item, dict):
+                        key = hashlib.md5(
+                            f"{item.get('title', '')}|{item.get('content', '')}".encode()
+                        ).hexdigest()
+                    else:
+                        key = hashlib.md5(str(item).encode()).hexdigest()
                     if key not in seen:
                         seen.add(key)
                         merged.append(item)
@@ -411,7 +417,8 @@ class MCPToolManager:
 
         try:
             # pyrefly: ignore [not-async]
-            resp = await self._client.messages.create(
+            resp = await messages_create(
+                    self._client,
                     model=self._fast_model, max_tokens=512, temperature=0.0,
                     thinking={"type": "disabled"},
                     messages=[{"role": "user", "content": prompt}],

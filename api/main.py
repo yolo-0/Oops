@@ -97,10 +97,11 @@ async def lifespan(app: FastAPI):
     )
 
     # Skills：启动时从目录加载业务能力说明，并在 Agent 调用 LLM 时动态注入。
-    skills_dir = os.getenv("ECHOMIND_SKILLS_DIR", str(pathlib.Path(_ROOT) / "skills"))
+    skills_dir = os.getenv("OOPS_SKILLS_DIR") or os.getenv("ECHOMIND_SKILLS_DIR") or str(pathlib.Path(_ROOT) / "skills")
+    skills_max_chars = int(os.getenv("OOPS_SKILLS_MAX_PROMPT_CHARS") or os.getenv("ECHOMIND_SKILLS_MAX_PROMPT_CHARS") or "5000")
     _skill_manager = SkillManager(
         root_dir=skills_dir,
-        max_prompt_chars=int(os.getenv("ECHOMIND_SKILLS_MAX_PROMPT_CHARS", "5000")),
+        max_prompt_chars=skills_max_chars,
     )
     _skill_manager.load()
 
@@ -192,6 +193,7 @@ async def lifespan(app: FastAPI):
         },
         cache_ttl=300.0,
         supports_rerank=True,
+        timeout_s=10.0,
         fallback=knowledge_fallback,
     ))
 
@@ -396,7 +398,7 @@ async def _build_knowledge_context(message: str, intent=None, top_k: int = 3) ->
 
         parts = ["[知识库检索结果]"]
         used = False
-        CONFIDENCE_THRESHOLD = 0.5  # 设定置信度阈值
+        CONFIDENCE_THRESHOLD = float(os.getenv("RAG_SCORE_THRESHOLD", "0.35"))  # 设定置信度阈值
 
         for i, item in enumerate(result.data[:top_k], start=1):
             if not isinstance(item, dict):
@@ -693,7 +695,7 @@ async def run_eval(body: Optional[EvalRunInput] = None):
 # ── 交互式 CLI ────────────────────────────────────────────────────────────────
 async def _cli():
     print(BANNER)
-    print("EchoMind CLI — 输入 quit 退出\n")
+    print("Oops CLI — 输入 quit 退出\n")
 
     from agents.agent_orchestrator import AgentOrchestrator, Request
     from memory.conversation_memory import MemoryManager, MsgRole
@@ -701,8 +703,8 @@ async def _cli():
 
     cfg = _anthropic_cfg()
     skill_manager = SkillManager(
-        root_dir=os.getenv("ECHOMIND_SKILLS_DIR", str(pathlib.Path(_ROOT) / "skills")),
-        max_prompt_chars=int(os.getenv("ECHOMIND_SKILLS_MAX_PROMPT_CHARS", "5000")),
+        root_dir=os.getenv("OOPS_SKILLS_DIR") or os.getenv("ECHOMIND_SKILLS_DIR") or str(pathlib.Path(_ROOT) / "skills"),
+        max_prompt_chars=int(os.getenv("OOPS_SKILLS_MAX_PROMPT_CHARS") or os.getenv("ECHOMIND_SKILLS_MAX_PROMPT_CHARS") or "5000"),
     )
     skill_manager.load()
     orch = AgentOrchestrator(

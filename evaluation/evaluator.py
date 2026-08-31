@@ -28,7 +28,7 @@ from pydantic import BaseModel, Field
 
 from anthropic import AsyncAnthropic
 
-from core.llm_utils import extract_text_content
+from core.llm_utils import extract_text_content, messages_create
 
 from core.intent_recognizer import IntentCategory, IntentRecognizer
 
@@ -143,7 +143,8 @@ Agent 响应: {response}
         )
         prompt = self._clean_text(prompt) 
         try:
-            resp = await self._client.messages.create(
+            resp = await messages_create(
+                self._client,
                 model=self._model, max_tokens=1024, temperature=0.0,
                 thinking={"type": "disabled"},
                 messages=[{"role": "user", "content": prompt}],

@@ -29,7 +29,7 @@ import instructor
 from pydantic import BaseModel, Field
 from anthropic import AsyncAnthropic
 
-from core.llm_utils import extract_text_content
+from core.llm_utils import extract_text_content, messages_create
 
 logger = logging.getLogger(__name__)
 
@@ -103,9 +103,9 @@ class MemoryContext:
 
 class MemoryManager:
     """
-    三级记忆管理器。
+    四级记忆管理器。
 
-    工作记忆存 Redis（TTL 24h），情景记忆和用户画像存 ChromaDB（持久化）。
+    工作记忆存 Redis（TTL 24h），情景记忆、用户画像和用户承诺存 ChromaDB（持久化）。
     """
 
     WORKING_MAX   = 20    # 工作记忆最大条数，超过则触发压缩
@@ -238,7 +238,8 @@ class MemoryManager:
 
         try:
             # pyrefly: ignore [not-async]
-            resp = await self._client.messages.create(
+            resp = await messages_create(
+                self._client,
                 model=self._fast_model, max_tokens=1024, temperature=0.0,
                 thinking={"type": "disabled"},
                 messages=[{"role": "user", "content": prompt}],
@@ -401,12 +402,20 @@ class MemoryManager:
 
         # LLM 提取服务记录
         text = self._safe_text("\n".join(f"{m.role.value}: {m.content}" for m in to_compress))
-        prompt = self._safe_text(f"""根据以下对话提取服务记录。
+        prompt = self._safe_text(f"""根据以下对话提取服务记录，必须逐字保留关键具体值：
+- issue_types：问题分类（技术/账务/配送/售后等）
+- handel_flow：客服与用户共同推进问题解决的关键流程
+- submitted_materials：用户明确提供的订单号、截图等辅助材料原文
+- extracted_slots：必须逐字填入用户给出的具体值（联系电话、收货地址、订单号、预约时间、产品型号等），
+  不允许概括或省略（例如用户说了"电话 13800138000"，就必须把 13800138000 原样写入）
+- escalation_events / resolution_status：如实填写
+
 【对话内容】：
 {text}""")
         try:
             # pyrefly: ignore [not-async]
-            resp = await self._client.messages.create(
+            resp = await messages_create(
+                self._client,
                 model=self._fast_model, max_tokens=1024, temperature=0.0,
                 thinking={"type": "disabled"},
                 messages=[{"role": "user", "content": prompt}],

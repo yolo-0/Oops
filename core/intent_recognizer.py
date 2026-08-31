@@ -198,16 +198,21 @@ class IntentRecognizer:
 
         history 格式：[{"role": "user"/"assistant", "content": "..."}]
         """
+        # 提前提取实体：语义缓存是模糊命中，可能把"查订单A"的缓存串给"查订单B"，
+        # 命中后必须用实体一致性校验，避免复用其他订单的上下文。
+        fresh_entities = self._extract_entities(message)
         if not history and getattr(self, "_semantic_cache", None) is not None:
             cached_dict = await self._semantic_cache.get(f"intent:{message}", threshold=0.05)
             if cached_dict:
-                self.cache_hits += 1
-                logger.info(f"意图识别语义缓存命中: {message!r}")
-                # Convert string intent back to Enum
-                cached_dict["intent"] = IntentCategory(cached_dict["intent"])
-                if cached_dict.get("urgency"):
-                    cached_dict["urgency"] = UrgencyLevel(cached_dict["urgency"])
-                return IntentResult(**cached_dict)
+                if cached_dict.get("entities") == fresh_entities:
+                    self.cache_hits += 1
+                    logger.info(f"意图识别语义缓存命中: {message!r}")
+                    # Convert string intent back to Enum
+                    cached_dict["intent"] = IntentCategory(cached_dict["intent"])
+                    if cached_dict.get("urgency"):
+                        cached_dict["urgency"] = UrgencyLevel(cached_dict["urgency"])
+                    return IntentResult(**cached_dict)
+                logger.info(f"意图语义缓存实体不一致，忽略缓存: {message!r}")
 
         key = self._cache_key(message, history)
         if key in self._cache:
@@ -229,7 +234,7 @@ class IntentRecognizer:
             emb = {"intent": IntentCategory.OTHER, "confidence": 0.0}
 
         intent, confidence, source_scores = self._vote(llm, emb, pat)
-        entities = self._extract_entities(message)
+        entities = fresh_entities
         urgency  = self._urgency(message, intent)
 
         result = IntentResult(

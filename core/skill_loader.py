@@ -281,6 +281,9 @@ class SkillManager:
         这里刻意不用 PyYAML，避免为一个轻量配置格式新增运行时依赖。
         """
         text = raw.lstrip()
+        # 兼容 UTF-8 BOM（\ufeff）：lstrip 不会移除 BOM，会导致 startswith("---") 失败
+        if text.startswith("\ufeff"):
+            text = text[1:].lstrip()
         if not text.startswith("---"):
             return {}, raw
 

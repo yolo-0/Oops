@@ -87,10 +87,10 @@ curl -X POST "http://localhost:8000/search?query=API如何接入&top_k=3"
 情景记忆不是每次对话都写入。只有当前会话消息数达到压缩阈值后才写入。默认阈值：
 
 ```text
-MemoryManager.COMPRESS_AT = 15
+MemoryManager.COMPRESS_AT = 10
 ```
 
-连续发 16 条以上消息后再查看 `episodic`。
+连续发 11 条以上消息后再查看 `episodic`。
 
 ## 16. 推荐验证流程
 

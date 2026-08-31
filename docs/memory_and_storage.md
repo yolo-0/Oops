@@ -188,12 +188,12 @@ PY
 
 ### 9.7 查看情景记忆 `episodic`
 
-情景记忆只有在当前会话消息数量达到压缩阈值后才会写入。默认阈值在 `MemoryManager.COMPRESS_AT` 中，目前是 15 条消息。
+情景记忆只有在当前会话消息数量达到压缩阈值后才会写入。默认阈值在 `MemoryManager.COMPRESS_AT` 中，目前是 10 条消息。
 
 可以连续发送多条消息触发压缩：
 
 ```bash
-for i in $(seq 1 16); do
+for i in $(seq 1 11); do
   curl -s -X POST http://localhost:8000/chat \
     -H "Content-Type: application/json" \
     -d "{\"message\": \"这是第 $i 条测试消息，我想咨询退款和订单问题\", \"user_id\": \"episodic_user\", \"conv_id\": \"episodic_session\"}" > /dev/null
@@ -305,10 +305,10 @@ KEYS *
 wm:{user_id}:{conv_id}
 ```
 
-会话摘要 key 格式：
+会话服务记录 key 格式：
 
 ```text
-summary:{user_id}:{conv_id}
+service_records:{user_id}:{conv_id}
 ```
 
 查看某个会话最近消息：
@@ -340,13 +340,13 @@ Oops 实现了模拟人类记忆机制的四级记忆架构，由 `memory/conver
 
 ```text
 WORKING_MAX = 20
-COMPRESS_AT = 15
+COMPRESS_AT = 10
 ```
 
-当同一个 `user_id + conv_id` 的工作记忆达到 15 条消息时，系统会：
+当同一个 `user_id + conv_id` 的工作记忆达到 10 条消息时，系统会：
 
 ```text
-旧消息 -> LLM 摘要 -> Redis summary
+旧消息 -> LLM 摘要 -> Redis service_records
 旧消息摘要 -> ChromaDB episodic
 最近 5 条消息 -> 继续保留在 Redis wm 列表
 ```
@@ -375,14 +375,14 @@ docker exec -it oops-redis redis-cli -a oops123
 查询摘要：
 
 ```redis
-GET summary:cli_user:5a076f2b-b607-4339-9e9f-f0399862d366
+GET service_records:cli_user:5a076f2b-b607-4339-9e9f-f0399862d366
 ```
 
 一条命令快速查看：
 
 ```bash
 docker exec -it oops-redis redis-cli -a oops123 \
-  GET summary:cli_user:5a076f2b-b607-4339-9e9f-f0399862d366
+  GET service_records:cli_user:5a076f2b-b607-4339-9e9f-f0399862d366
 ```
 
 ### 11.2 查看压缩后仍保留的最近 5 条工作记忆
@@ -404,7 +404,7 @@ docker exec -it oops-redis redis-cli -a oops123 \
 
 - Redis 使用 `LPUSH` 写入，最新消息在列表前面。
 - 代码读取时会 `reversed(raws)` 还原时间顺序。
-- 压缩后 Redis 工作记忆列表只保留最近 5 条；更早的内容会以摘要形式进入 Redis summary 和 ChromaDB `episodic`。
+- 压缩后 Redis 工作记忆列表只保留最近 5 条；更早的内容会以摘要形式进入 Redis `service_records` 和 ChromaDB `episodic`。
 
 ### 11.3 查看 ChromaDB 中的情景记忆摘要
 
@@ -500,6 +500,6 @@ PY
 
 | 位置 | 保存内容 | 用途 |
 |------|----------|------|
-| Redis `summary:{user_id}:{conv_id}` | 当前会话压缩摘要 | 下一次同会话请求直接拼入 prompt |
+| Redis `service_records:{user_id}:{conv_id}` | 当前会话压缩摘要 | 下一次同会话请求直接拼入 prompt |
 | ChromaDB `episodic` | 压缩摘要 + metadata | 跨会话按语义检索相关历史 |
 | Redis `wm:{user_id}:{conv_id}` | 最近 5 条消息 | 保持当前对话连贯性 |

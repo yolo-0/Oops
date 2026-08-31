@@ -228,6 +228,16 @@ class BillingAgent(BaseAgent):
     )
 
 
+class EscalationAgent(BaseAgent):
+    """人工转接/升级专员：负责安抚用户并交接给人工客服。"""
+    agent_type    = AgentType.ESCALATION
+    system_prompt = (
+        "你是 Oops 的升级转接专员。当用户要求转人工、投诉升级，或问题涉及人工审核/后台权限时，"
+        "礼貌地向用户说明将转接人工客服，简要总结已收集的信息和用户诉求，并说明后续处理路径。"
+        "不要编造处理结果，不要承诺未经人工核验的赔偿、时效或操作。"
+    )
+
+
 # ── 编排器 ────────────────────────────────────────────────────────────────────
 
 class AgentOrchestrator:
@@ -284,6 +294,7 @@ class AgentOrchestrator:
             AgentType.GENERAL:   [GeneralAgent(client, fast_model, skill_manager)],
             AgentType.TECHNICAL: [TechnicalAgent(client, model, skill_manager)],
             AgentType.BILLING:   [BillingAgent(client, model, skill_manager)],
+            AgentType.ESCALATION: [EscalationAgent(client, model, skill_manager)],
         }
 
     def set_skill_manager(self, skill_manager: Optional[Any]) -> None:
